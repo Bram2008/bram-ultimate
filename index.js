@@ -749,26 +749,51 @@ async function startBot() {
             logger: pino({ level: 'silent' })
         });
         sock.ev.on('creds.update', saveCreds);
-        sock.ev.on('connection.update', ({ connection, qr }) => {
-            if (qr) { console.log('📱 SCAN QR CODE:'); console.log(qr); }
-            if (connection === 'open') {
-                isConnected = true;
-                console.log('✅ BOT CONNECTED!');
-                console.log('💀 BRAM ULTIMATE ACTIVE');
-                console.log('📋 Ketik .menu di WhatsApp');
-            }
-        });
-        sock.ev.on('messages.upsert', async ({ messages }) => {
-            try {
-                const msg = messages[0];
-                if (!msg.message || msg.key.fromMe || !msg.key.remoteJid) return;
-                const sender = msg.key.remoteJid;
-                const isGroup = sender.includes('@g.us');
-                const senderJid = isGroup ? msg.key.participant : sender;
-                if (senderJid) await handleMessage(sock, msg, senderJid, isGroup);
-            } catch (e) {}
-        });
-        return sock;
-    } catch (e) { console.error('Error:', e.message); setTimeout(startBot, 10000); return null; }
+        sock.ev.on('connection.update', async ({ connection, qr }) => {
+    if (qr) { 
+        console.log('📱 SCAN QR CODE:'); 
+        console.log(qr); 
+    }
+    if (connection === 'open') {
+        isConnected = true;
+        console.log('✅ BOT CONNECTED!');
+        console.log('💀 BRAM ULTIMATE ACTIVE');
+        console.log('📋 Ketik .menu di WhatsApp');
+    }
+});
+
+// === TAMBAHKAN PAIRING CODE ===
+const readline = require('readline');
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+const question = (query) => new Promise((resolve) => rl.question(query, resolve));
+
+console.log('📱 Masukkan nomor WhatsApp (contoh: 6281234567890):');
+const phoneNumber = await question('> ');
+rl.close();
+
+if (!phoneNumber || phoneNumber.length < 10) {
+    console.log('❌ Nomor tidak valid!');
+    process.exit(1);
 }
-startBot();
+
+console.log('⏳ Menghubungkan ke WhatsApp...');
+
+setTimeout(async () => {
+    try {
+        const code = await sock.requestPairingCode(phoneNumber);
+        console.log('╔═══════════════════════════════════════╗');
+        console.log('║   📱 *PAIRING CODE*                  ║');
+        console.log('║                                     ║');
+        console.log(`║   🔢 ${code} ║`);
+        console.log('║                                     ║');
+        console.log('║   ⚡ Masukkan kode di WhatsApp!     ║');
+        console.log('║   📱 Buka WhatsApp → Link Devices   ║');
+        console.log('╚═══════════════════════════════════════╝');
+    } catch (e) {
+        console.log('❌ Gagal mendapatkan pairing code:', e.message);
+    }
+}, 3000);
