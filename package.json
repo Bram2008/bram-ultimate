@@ -1,0 +1,16 @@
+{
+  "name": "bram-ultimate",
+  "version": "3.0.0",
+  "description": "BRAM ULTIMATE — WhatsApp Bug Script",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "6.7.0",
+    "pino": "9.5.0",
+    "crypto": "1.0.1"
+  },
+  "author": "Bramz",
+  "license": "MIT"
+}
