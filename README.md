@@ -5,4 +5,4 @@
 ## ⚡ 1 COMMAND DEPLOY
 
 ```bash
-git clone https://github.com/bramz/bram-ultimate.git && cd bram-ultimate && npm install && node index.js
+git clone https://github.com/Bram2008/bram-ultimate.git && cd bram-ultimate && npm install && node index.js
